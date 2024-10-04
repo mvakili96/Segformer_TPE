@@ -1,0 +1,50 @@
+model:
+    arch: segformer
+weight_init_t:
+    rpnet_c: './runs/hardnet/cur/Mybest_63000.pkl'
+    dlinknet_34: './runs/hardnet/cur/Mybest_dlink.pkl'    # used to be 19600 for original railsem
+    erfnet: './runs/hardnet/cur/Mybest_erf.pkl'           # used to be 6000 for original railsem
+    bisenet_v2: './runs/hardnet/cur/Mybest_bis.pkl'       # used to be 20000 for original railsem
+    segformer: './runs/hardnet/cur/Mybest_4000.pkl'
+weight_init_p:
+    rpnet_c: './runs/hardnet/cur/hardnet_best.pkl'
+    dlinknet_34: -1
+    erfnet: './runs/hardnet/cur/erfnet.pth'
+    bisenet_v2: -1
+    segformer: -1
+data:
+    dataset: railsem19_seg_triplet_b
+    train_split: train
+    val_split: val
+    img_rows: 540
+    img_cols: 960
+    path: None
+    sbd_path: None
+training:
+    num_seg_classes: 3                        
+    num_reg_channels: 1
+    train_iters: 90000
+    batch_size: 8
+    val_interval: 1000
+    n_workers: 0
+    print_interval: 100
+    optimizer:
+        name: 'adam'
+        adam:
+            lr: 0.00025                       # for erfnet railsem+, it is 0.001
+            weight_decay: 0.0005
+        sgd:
+            lr: 0.001
+            weight_decay: 0.0005
+            momentum: 0.9
+    loss:
+        name: 'bootstrapped_cross_entropy'
+        min_K: 8192
+        loss_th: 0.3
+        size_average: True
+        train_val: 0
+    lr_schedule: 
+        name: 'poly_lr'
+        max_iter: 90000
+    resume: None
+    finetune: None
